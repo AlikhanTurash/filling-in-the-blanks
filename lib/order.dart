@@ -2,11 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitb_pantry_app/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-
+import 'student.dart'; // Import the globals file
+import 'completedOrder.dart';
 
 void main() {
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: OrderPage()));
 }
+
+String globaldocumentid = globalDocumentId;
 
 class Item {
   final String id;
@@ -17,7 +20,6 @@ class Item {
   Item(this.id, this.image, this.grouping, this.cardIsChecked);
 }
 
-
 class OrderPage extends StatefulWidget {
   OrderPage({Key? key}) : super(key: key);
 
@@ -25,19 +27,13 @@ class OrderPage extends StatefulWidget {
   State<OrderPage> createState() => _OrderPageState();
 }
 
-
-
 class _OrderPageState extends State<OrderPage> {
-
   List<String> groupNames = [];
   List<int> totalLimits = [];
   List<int> eachLimits = [];
   List<String> groupDirections = [];
   int listlength = 0;
   List<Item> order = [];
-
-
-
 
   @override
   void initState() {
@@ -46,8 +42,6 @@ class _OrderPageState extends State<OrderPage> {
     getDirections();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,29 +49,22 @@ class _OrderPageState extends State<OrderPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(width: double.infinity, height: 100),
+            SizedBox(width: double.infinity, height: 50),
             Image(
               image: AssetImage('assets/fitb.png'),
             ),
-            SizedBox(height: 50),
-          FutureBuilder<Map<dynamic, List<Item>>>(
-            future: createLists(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (snapshot.hasData) {
-                final lists = snapshot.data!;
-
-
-
+            SizedBox(height: 10),
+            FutureBuilder<Map<dynamic, List<Item>>>(
+              future: createLists(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final lists = snapshot.data!;
                   return GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 1,
                       childAspectRatio: .66,
-                      mainAxisSpacing: 20,
-                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
                     ),
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
@@ -89,39 +76,31 @@ class _OrderPageState extends State<OrderPage> {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            Column(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(
-                                    groupingName,
-                                    style: TextStyle(fontSize: 40,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-
-                                Container(
-                                    child: displayGroups(items)
-                                ),
-                              ],
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text(
+                                groupingName,
+                                style: TextStyle(
+                                    fontSize: 40, fontWeight: FontWeight.bold),
+                              ),
                             ),
-
+                            Container(child: displayGroups(items)),
                           ],
                         ),
                       );
                     },
                   );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${snapshot.error}'),
-                );
-              } else {
-                return Center(
-                  child: Text('No data available.'),
-                );
-              }
-            },
-          ),
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                } else {
+                  return Center(
+                    child: Text('No data available.'),
+                  );
+                }
+              },
+            ),
             SizedBox(height: 40),
             ElevatedButton(
               onPressed: () async {
@@ -129,26 +108,34 @@ class _OrderPageState extends State<OrderPage> {
                   try {
                     // Create a reference to the cart items collection
                     CollectionReference studentOrders =
-                    FirebaseFirestore.instance.collection('Orders');
+                        FirebaseFirestore.instance.collection('Orders');
 
                     // Prepare the data to save
                     Map<String, dynamic> dataToSave = {
-                      'items': order.map((item) => {'itemId': item.id, 'quantity': 1}).toList(),
+                      'items': order
+                          .map((item) => {'itemId': item.id, 'quantity': 1})
+                          .toList(),
                       'timestamp': FieldValue.serverTimestamp(),
+                      'studentId': globalDocumentId,
                     };
 
-                    // Save the data to the cart items collection
-                    await studentOrders.add(dataToSave);
-                    print('Items added to cart in Firestore.');
+                    if (globalDocumentId.isNotEmpty) {
+                      // Save the data to the cart items collection
+                      await studentOrders.add(dataToSave);
+                      print('Items added to cart in Firestore.');
 
-                    // Clear the selectedItems list after saving
-                    order.clear();
+                      // Clear the selectedItems list after saving
+                      order.clear();
 
-                    // Navigate to the OrderPage
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => OrderPage()),
-                    );
+                      // Navigate to the OrderPage
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CompletedOrderPage()),
+                      );
+                    } else {
+                      print('Error find student information in Firestore');
+                    }
                   } catch (e) {
                     print('Error adding items to cart in Firestore: $e');
                   }
@@ -166,15 +153,11 @@ class _OrderPageState extends State<OrderPage> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
               },
-
-
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 shadowColor: Colors.transparent,
                 elevation: 0.0,
-              ).copyWith(
-                  elevation: MaterialStateProperty.all<double>(
-                      0.0)),
+              ).copyWith(elevation: MaterialStateProperty.all<double>(0.0)),
               child: Container(
                 child: const Text(
                   'Order',
@@ -200,35 +183,31 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   Widget itemCard(Item item) {
-
     return Card(
       elevation: 8.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: GestureDetector(
         onTap: () async {
           setState(() {
-            item.cardIsChecked = 1 - item.cardIsChecked;
-            if (item.cardIsChecked == 1) {
-              order.add(item);
-              print('Item added to order: ${item.id}');
+            if (order.indexWhere((element) => element.id == item.id) >= 0) {
+              // if already in order
+              order.removeWhere((element) => element.id == item.id);
             } else {
-              order.remove(item);
-              print('Item removed from order: ${item.id}');
+              order.add(item);
             }
-            print('Item card checked: ${item.id}, cardIsChecked: ${item.cardIsChecked}');
+            print(
+                'Item card checked: ${item.id}, cardIsChecked: ${item.cardIsChecked}');
           });
-
         },
-
         child: Container(
           height: 200,
           width: 200,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: (item.cardIsChecked == 0)
-                  ? Colors.blueGrey
-                  : Colors.green,
+              color: (!order.isEmpty && (order.indexWhere((element) => element.id == item.id) >= 0))
+                  ? Colors.green
+                  : Colors.blueGrey,
               width: 3,
             ),
           ),
@@ -237,9 +216,9 @@ class _OrderPageState extends State<OrderPage> {
               Image.network(
                 item.image,
                 alignment: Alignment.bottomCenter,
-                fit: BoxFit.cover, // Adjusts the image to fit within the container
+                fit: BoxFit
+                    .cover, // Adjusts the image to fit within the container
               ),
-
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
@@ -247,9 +226,9 @@ class _OrderPageState extends State<OrderPage> {
                     height: 85,
                   ),
                   decoration: BoxDecoration(
-                    color:  (item.cardIsChecked == 0)
-                        ? Colors.blueGrey
-                        : Colors.green,
+                    color:  (!order.isEmpty && (order.indexWhere((element) => element.id == item.id) >= 0))
+                        ? Colors.green
+                        : Colors.blueGrey,
                     borderRadius: BorderRadius.only(
                       bottomRight: Radius.circular(8),
                       bottomLeft: Radius.circular(8),
@@ -258,28 +237,33 @@ class _OrderPageState extends State<OrderPage> {
                   padding: EdgeInsets.all(4),
                   child: Column(
                     children: [
-                      SizedBox(height: 10,),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Center(
                         child: Text(
                           item.id,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                          ),
                         ),
-                    ),
                       ),
-                      SizedBox(height: 6,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add_circle,
-                              size: 25.0, // You can adjust the size as needed
-                              color: Colors.white, // You can adjust the color as needed
-                            ),
-                          ],
-                        ),
-                  ],
+                      SizedBox(
+                        height: 6,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add_circle,
+                            size: 25.0, // You can adjust the size as needed
+                            color: Colors
+                                .white, // You can adjust the color as needed
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -293,7 +277,7 @@ class _OrderPageState extends State<OrderPage> {
   Widget displayGroups(List<Item> items) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
+        crossAxisCount: 2,
         childAspectRatio: .80,
         mainAxisSpacing: 5,
         crossAxisSpacing: 5,
@@ -311,7 +295,8 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   Future<Map<dynamic, List<Item>>> createLists() async {
-    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Items').get();
+    final QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('Items').get();
     final Map<dynamic, List<Item>> lists = {};
 
     querySnapshot.docs.forEach((doc) {
@@ -322,21 +307,21 @@ class _OrderPageState extends State<OrderPage> {
       if (querySnapshot.docs.isNotEmpty) {
         if (!lists.containsKey(itemGrouping)) {
           lists[itemGrouping] = [];
-            // Initialize with false
+          // Initialize with false
         }
         var itemIsClicked = 0;
-        lists[itemGrouping]?.add(Item(itemId, itemImage, itemGrouping, itemIsClicked));
+        lists[itemGrouping]
+            ?.add(Item(itemId, itemImage, itemGrouping, itemIsClicked));
       }
     });
-
 
     return lists;
   }
 
   Future<void> getDirections() async {
     try {
-
-      CollectionReference innerCollectionRef2 = FirebaseFirestore.instance.collection('Groups');
+      CollectionReference innerCollectionRef2 =
+          FirebaseFirestore.instance.collection('Groups');
 
       QuerySnapshot querySnapshot2 = await innerCollectionRef2.get();
 
@@ -352,7 +337,6 @@ class _OrderPageState extends State<OrderPage> {
             eachLimits.add(eachLimit);
             totalLimits.add(totalLimit);
           });
-
         }
       } else {
         print('No documents found in the collection');
@@ -361,8 +345,6 @@ class _OrderPageState extends State<OrderPage> {
       print('Error fetching information from Firestore: $e');
     }
   }
-
-
 }
 
 class PopupContent extends StatefulWidget {
@@ -470,11 +452,12 @@ class _PopupContentState extends State<PopupContent> {
               onPressed: () async {
                 if (_quantity > 0) {
                   // Generate a unique ID for the new order
-                  String orderId = FirebaseFirestore.instance.collection('Orders').doc().id;
+                  String orderId =
+                      FirebaseFirestore.instance.collection('Orders').doc().id;
 
                   // Create a reference to the new order collection
                   CollectionReference orderCollection =
-                  FirebaseFirestore.instance.collection('Orders');
+                      FirebaseFirestore.instance.collection('Orders');
 
                   // Prepare the data to save
                   Map<String, dynamic> dataToSave = {
@@ -531,4 +514,3 @@ class _PopupContentState extends State<PopupContent> {
     );
   }
 }
-

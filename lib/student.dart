@@ -3,18 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:flutter/services.dart';
+import 'globals.dart'; // Import the globals file
 
 void main() {
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Information()));
+  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Student()));
 }
 
-class Information extends StatefulWidget {
-  const Information({Key? key}) : super(key: key);
+class Student extends StatefulWidget {
+  const Student({Key? key}) : super(key: key);
 
   @override
-  State<Information> createState() => _InformationState();
+  State<Student> createState() => _StudentState();
 }
-
+String globalDocumentId = '';
 int weekdaysValue = DateTime.now().weekday;
 //CollectionReference collection =
   //  FirebaseFirestore.instance.collection('School');
@@ -34,7 +35,7 @@ TextEditingController _controllerFirst = TextEditingController();
 TextEditingController _controllerLast = TextEditingController();
 TextEditingController _controllerSchool = TextEditingController();
 
-class _InformationState extends State<Information> {
+class _StudentState extends State<Student> {
   bool isActive = false;
 
   @override
@@ -195,13 +196,22 @@ class _InformationState extends State<Information> {
                                         'school': _controllerSchool.text,
                                       };
                                       CollectionReference collectionRef =
-                                          FirebaseFirestore.instance
-                                              .collection('Information');
-                                      collectionRef.add(dataToSave);
+                                      FirebaseFirestore.instance.collection('Student');
+
+                                      // Add the data and get the DocumentReference
+                                      DocumentReference docRef = await collectionRef.add(dataToSave);
+
+                                      setState(() {
+                                        globalDocumentId = docRef.id;
+                                      });
+                                      // Get the ID of the newly added document
+
+
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => OrderPage()),
+                                          builder: (context) => OrderPage(), // Pass the document ID
+                                        ),
                                       );
                                     } else {
                                       setState(() {

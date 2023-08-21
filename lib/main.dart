@@ -1,6 +1,7 @@
-  import 'package:fitb_pantry_app/order.dart';
+  import 'package:fitb_pantry_app/completedOrder.dart';
+import 'package:fitb_pantry_app/order.dart';
 import 'package:flutter/material.dart';
-import 'information.dart';
+import 'student.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
                 const SizedBox(height: 460),
                    ElevatedButton(
                      onPressed: () {
-                       Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                       Navigator.push(context, MaterialPageRoute(builder: (context) => Student()));
                        },
                      style: ElevatedButton.styleFrom(
                        backgroundColor: Colors.white,
