@@ -176,7 +176,7 @@ class _StudentState extends State<Student> {
                                   elevation: 16,
                                 ),
                               ),
-                              SizedBox(height: 25),
+                              SizedBox(height: 75),
                               ElevatedButton(
                                 onPressed: () async {
                                   bool isFormEnabled =
@@ -188,12 +188,13 @@ class _StudentState extends State<Student> {
                                       setState(() {
                                         isValidForm = true;
                                       });
-                                      Map<String, String> dataToSave = {
+                                      Map<String, dynamic> dataToSave = {
                                         'phone number': _controllerPhone.text,
                                         'email': _controllerEmail.text,
                                         'first name': _controllerFirst.text,
                                         'last name': _controllerLast.text,
                                         'school': _controllerSchool.text,
+                                        'isValidStudent': 0,
                                       };
                                       CollectionReference collectionRef =
                                       FirebaseFirestore.instance.collection('Student');
@@ -236,23 +237,21 @@ class _StudentState extends State<Student> {
                                   backgroundColor: Colors.white,
                                   shadowColor: Colors.transparent,
                                   elevation: 0.0,
-                                ).copyWith(
-                                    elevation:
-                                        ButtonStyleButton.allOrNull(0.0)),
-                                child: Container(
+                                ).copyWith(elevation:ButtonStyleButton.allOrNull(0.0)),
+                                child:Container(
+                                  height: 80,
+                                  width: 300,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                   child: const Text(
-                                    'Order',
+                                    'Start Order',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 30,
                                     ),
-                                  ),
-                                  height: 60,
-                                  width: 200,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration (
-                                    color: Colors.purple,
-                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                 ),
                               ),

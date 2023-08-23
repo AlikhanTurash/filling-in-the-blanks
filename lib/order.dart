@@ -3,7 +3,7 @@ import 'package:fitb_pantry_app/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'student.dart'; // Import the globals file
-import 'completedOrder.dart';
+import 'orderSummary.dart';
 
 void main() {
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: OrderPage()));
@@ -59,37 +59,30 @@ class _OrderPageState extends State<OrderPage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final lists = snapshot.data!;
-                  return GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 1,
-                      childAspectRatio: .66,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                    ),
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: lists.length,
-                    itemBuilder: (context, index) {
-                      final groupingName = lists.keys.toList()[index];
-                      final items = lists[groupingName]!;
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                groupingName,
-                                style: TextStyle(
-                                    fontSize: 40, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Container(child: displayGroups(items)),
-                          ],
-                        ),
-                      );
-                    },
-                  );
+                  return
+                    Container(
+                      child: Column(
+                          children: List.generate(lists.length,(index){
+                            final groupingName = lists.keys.toList()[index];
+                            final items = lists[groupingName]!;
+
+                            return Column(
+                              children: [
+                                SizedBox(width: double.infinity, height: 50),
+                                Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    groupingName,
+                                    style: TextStyle(
+                                        fontSize: 40, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Container(child: displayGroups(items)),
+                              ],
+                            );
+                          })
+                      ),
+                    );
                 } else if (snapshot.hasError) {
                   return Center(
                     child: Text('Error: ${snapshot.error}'),
@@ -117,6 +110,7 @@ class _OrderPageState extends State<OrderPage> {
                           .toList(),
                       'timestamp': FieldValue.serverTimestamp(),
                       'studentId': globalDocumentId,
+                      'isValidOrder': 0,
                     };
 
                     if (globalDocumentId.isNotEmpty) {
@@ -131,7 +125,7 @@ class _OrderPageState extends State<OrderPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => CompletedOrderPage()),
+                            builder: (context) => OrderSummaryPage()),
                       );
                     } else {
                       print('Error find student information in Firestore');
@@ -153,27 +147,27 @@ class _OrderPageState extends State<OrderPage> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                shadowColor: Colors.transparent,
-                elevation: 0.0,
-              ).copyWith(elevation: MaterialStateProperty.all<double>(0.0)),
-              child: Container(
-                child: const Text(
-                  'Order',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shadowColor: Colors.transparent,
+                  elevation: 0.0,
+                ).copyWith(elevation:ButtonStyleButton.allOrNull(0.0)),
+                child:Container(
+                  height: 80,
+                  width: 400,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    'Order',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                    ),
                   ),
                 ),
-                height: 60,
-                width: 200,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.purple,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
             ),
             SizedBox(height: 40),
           ],

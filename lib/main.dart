@@ -1,4 +1,4 @@
-  import 'package:fitb_pantry_app/completedOrder.dart';
+  import 'package:fitb_pantry_app/orderSummary.dart';
 import 'package:fitb_pantry_app/order.dart';
 import 'package:flutter/material.dart';
 import 'student.dart';
