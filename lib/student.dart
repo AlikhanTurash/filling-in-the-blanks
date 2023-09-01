@@ -45,7 +45,7 @@ class _StudentState extends State<Student> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           const SizedBox(width: double.infinity, height: 100),
           const Image(
-            image: AssetImage('assets/fitb.png'),
+            image: AssetImage('assets/images/fitb.png'),
           ),
           Column(
             children: [

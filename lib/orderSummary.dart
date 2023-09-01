@@ -45,7 +45,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
           children: [
             const SizedBox(width: double.infinity, height: 100),
             const Image(
-              image: AssetImage('assets/fitb.png'),
+              image: AssetImage('assets/images/fitb.png'),
             ),
             Text(
               'Order Summary',

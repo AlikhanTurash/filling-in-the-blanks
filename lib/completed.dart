@@ -37,7 +37,7 @@ class CompletePage extends StatelessWidget {
           children: [
             const SizedBox(width: double.infinity, height: 100),
             const Image(
-              image: AssetImage('assets/fitb.png'),
+              image: AssetImage('assets/images/fitb.png'),
             ),
             const SizedBox(height: 460),
             ElevatedButton(

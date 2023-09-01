@@ -51,7 +51,7 @@ class _OrderPageState extends State<OrderPage> {
           children: [
             SizedBox(width: double.infinity, height: 50),
             Image(
-              image: AssetImage('assets/fitb.png'),
+              image: AssetImage('assets/images/fitb.png'),
             ),
             SizedBox(height: 10),
             FutureBuilder<Map<dynamic, List<Item>>>(

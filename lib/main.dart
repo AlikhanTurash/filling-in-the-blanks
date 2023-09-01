@@ -1,5 +1,6 @@
   import 'package:fitb_pantry_app/orderSummary.dart';
 import 'package:fitb_pantry_app/order.dart';
+import 'package:fitb_pantry_app/src/core/services/di.dart';
 import 'package:flutter/material.dart';
 import 'student.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -7,9 +8,10 @@ import 'firebase_options.dart';
 
 
 Future<void> main() async{
+  await initLocator();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
       debugShowCheckedModeBanner: false,
     home: MyApp()));
 }
@@ -29,7 +31,7 @@ class MyApp extends StatelessWidget {
               children: [
                 const SizedBox(width: double.infinity, height: 100),
                  const Image(
-                    image: AssetImage('assets/fitb.png'),
+                    image: AssetImage('assets/images/fitb.png'),
                   ),
                 const SizedBox(height: 460),
                    ElevatedButton(
