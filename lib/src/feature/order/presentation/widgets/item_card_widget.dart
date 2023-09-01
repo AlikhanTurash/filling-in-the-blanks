@@ -1,41 +1,37 @@
 import 'package:fitb_pantry_app/src/feature/order/data/models/product_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 
 class ItemCardWidget extends StatefulWidget {
   const ItemCardWidget({
     super.key,
     required this.order,
     required this.item,
+    required this.onSelected,
+    required this.onUnselected,
   });
 
   final List<ProductModel> order;
   final ProductModel item;
+  final Function() onSelected;
+  final Function() onUnselected;
 
   @override
   State<ItemCardWidget> createState() => _ItemCardWidgetState();
 }
 
 class _ItemCardWidgetState extends State<ItemCardWidget> {
+  bool isSelected = false;
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 8.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: GestureDetector(
-        onTap: () async {
-          setState(() {
-            if (widget.order
-                    .indexWhere((element) => element.id == widget.item.id) >=
-                0) {
-              // if already in order
-              widget.order
-                  .removeWhere((element) => element.id == widget.item.id);
-            } else {
-              widget.order.add(widget.item);
-            }
-            print(
-                'Item card checked: ${widget.item.id}, cardIsChecked: ${widget.item}');
-          });
+        onTap: () {
+          isSelected = !isSelected;
+          setState(() {});
+          isSelected ? widget.onSelected() : widget.onUnselected();
         },
         child: Container(
           height: 200,
@@ -43,12 +39,7 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: (widget.order.isNotEmpty &&
-                      (widget.order.indexWhere(
-                              (element) => element.id == widget.item.id) >=
-                          0))
-                  ? Colors.green
-                  : Colors.blueGrey,
+              color: isSelected ? Colors.green : Colors.blueGrey,
               width: 3,
             ),
           ),
@@ -67,12 +58,7 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
                     height: 85,
                   ),
                   decoration: BoxDecoration(
-                    color: (widget.order.isNotEmpty &&
-                            (widget.order.indexWhere((element) =>
-                                    element.id == widget.item.id) >=
-                                0))
-                        ? Colors.green
-                        : Colors.blueGrey,
+                    color: isSelected ? Colors.green : Colors.blueGrey,
                     borderRadius: const BorderRadius.only(
                       bottomRight: Radius.circular(8),
                       bottomLeft: Radius.circular(8),
