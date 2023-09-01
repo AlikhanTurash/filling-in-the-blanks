@@ -1,11 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:fitb_pantry_app/src/core/widgets/buttons/app_button.dart';
 import 'package:fitb_pantry_app/src/core/services/di.dart';
-import 'package:fitb_pantry_app/src/ui_component/theme/app_colors.dart';
+import 'package:fitb_pantry_app/src/feature/app/app.dart';
 import 'package:flutter/material.dart';
 
 import 'firebase_options.dart';
-import 'student.dart';
 
 Future<void> main() async {
   await initLocator();
@@ -13,56 +11,5 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const MyApp(),
-      theme: ThemeData(
-        scaffoldBackgroundColor: AppColors.backgroundColor,
-      ),
-    ),
-  );
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 120),
-          const Image(
-            image: AssetImage('assets/images/fitb.png'),
-          ),
-          const SizedBox(height: 30),
-          const Text(
-            "Food Pantry App",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 32,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: AppButton(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Student()));
-              },
-              buttonText: "Get Started",
-            ),
-          ),
-          const SizedBox(
-            height: 46,
-          ),
-        ],
-      ),
-    );
-  }
+  runApp(const App());
 }

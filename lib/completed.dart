@@ -1,12 +1,9 @@
+import 'package:fitb_pantry_app/src/feature/app/app.dart';
 import 'package:flutter/material.dart';
 
-import 'main.dart';
-
 void main() {
-
   runApp(const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: CompletePage()));
+      debugShowCheckedModeBanner: false, home: CompletePage()));
 }
 
 class CompletePage extends StatelessWidget {
@@ -34,7 +31,8 @@ class CompletePage extends StatelessWidget {
             const SizedBox(height: 460),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const MyApp()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const App()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
