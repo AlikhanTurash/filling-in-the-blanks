@@ -142,13 +142,13 @@ class _StudentState extends State<Student> {
                             DocumentSnapshot snap = snapshot.data.docs[i];
                             listOfSchools.add(
                               DropdownMenuItem(
+                                value: snap.id,
                                 child: Text(
                                   snap.id,
                                   style: TextStyle(
                                     color: Colors.grey[600],
                                   ),
                                 ),
-                                value: snap.id,
                               ),
                             );
                           }
@@ -214,7 +214,7 @@ class _StudentState extends State<Student> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              OrderPage(), // Pass the document ID
+                                              const OrderPage(), // Pass the document ID
                                         ),
                                       );
                                     } else {

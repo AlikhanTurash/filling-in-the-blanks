@@ -43,13 +43,13 @@ class NetworkExecuter {
       try {
         final response =
             await _creator.request(route: route, options: options, dio: _dio);
-        late final responseMap;
+        late final Map<String, dynamic> responseMap;
         final List<dynamic> responseList = [];
 
         if (response.data is List<dynamic>) {
-          (response.data as List<dynamic>).forEach((element) {
+          for (var element in (response.data as List<dynamic>)) {
             responseList.add(element);
-          });
+          }
           return Result.success(responseList as K);
         } else if (response.data is Map<String, dynamic>) {
           responseMap = response.data as Map<String, dynamic>;
@@ -57,7 +57,7 @@ class NetworkExecuter {
         }
 
         return Result<K>.failure(
-            NetworkException.type(error: "something went wrong"));
+            const NetworkException.type(error: "something went wrong"));
 
         /// Dio error
       } on DioException catch (err) {

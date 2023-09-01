@@ -36,7 +36,7 @@ class _AddToCartBottomSheetState extends State<AddToCartBottomSheet> {
         children: <Widget>[
           Padding(
             padding: EdgeInsets.all(Spacing.matGridUnit()),
-            child: Text(
+            child: const Text(
               "Add item to Cart",
               style: TextStyle(
               fontSize: 40,
@@ -51,7 +51,7 @@ class _AddToCartBottomSheetState extends State<AddToCartBottomSheet> {
               children: <Widget>[
                 IconButton(
                     iconSize: 40.0,
-                    icon: Icon(Icons.remove),
+                    icon: const Icon(Icons.remove),
                     onPressed: () {
                       if (_quantity > 0) {
                         setState(() => _quantity--);
@@ -59,13 +59,13 @@ class _AddToCartBottomSheetState extends State<AddToCartBottomSheet> {
                     }),
                 Text(
                   _quantity.toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                   )
                 ),
                 IconButton(
                   iconSize: 40.0,
-                  icon: Icon(Icons.add),
+                  icon: const Icon(Icons.add),
                   onPressed: () {
                     setState(() => _quantity++);
                   },

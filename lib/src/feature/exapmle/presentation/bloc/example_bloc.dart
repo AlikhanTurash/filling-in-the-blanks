@@ -6,7 +6,7 @@ part 'example_state.dart';
 part 'example_bloc.freezed.dart';
 
 class ExampleBloc extends Bloc<ExampleEvent, ExampleState> {
-  ExampleBloc() : super(_Initial()) {
+  ExampleBloc() : super(const _Initial()) {
     on<ExampleEvent>((event, emit) {
       // TODO: implement event handler
     });

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitb_pantry_app/styles.dart';
 import 'package:flutter/material.dart';
-
 import 'student.dart'; // Import the globals file
 
 void main() {
