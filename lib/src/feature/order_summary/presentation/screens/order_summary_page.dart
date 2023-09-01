@@ -41,6 +41,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 1,
                   childAspectRatio: 6, // Number of columns in the grid view

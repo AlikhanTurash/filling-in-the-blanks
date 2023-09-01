@@ -2,25 +2,26 @@ import 'package:fitb_pantry_app/src/feature/order/data/model/product_model.dart'
 import 'package:flutter/material.dart';
 
 class ItemCardWidget extends StatefulWidget {
-  const ItemCardWidget({
+  ItemCardWidget({
     super.key,
     required this.order,
     required this.item,
     required this.onSelected,
     required this.onUnselected,
+    required this.isSelected,
   });
 
   final List<ProductModel> order;
   final ProductModel item;
   final Function() onSelected;
   final Function() onUnselected;
+  bool isSelected;
 
   @override
   State<ItemCardWidget> createState() => _ItemCardWidgetState();
 }
 
 class _ItemCardWidgetState extends State<ItemCardWidget> {
-  bool isSelected = false;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -28,9 +29,10 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: GestureDetector(
         onTap: () {
-          isSelected = !isSelected;
+          widget.isSelected = !widget.isSelected;
+          print(widget.isSelected);
           setState(() {});
-          isSelected ? widget.onSelected() : widget.onUnselected();
+          widget.isSelected ? widget.onSelected() : widget.onUnselected();
         },
         child: Container(
           height: 200,
@@ -38,7 +40,7 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected ? Colors.green : Colors.blueGrey,
+              color: widget.isSelected ? Colors.green : Colors.blueGrey,
               width: 3,
             ),
           ),
@@ -57,7 +59,7 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
                     height: 85,
                   ),
                   decoration: BoxDecoration(
-                    color: isSelected ? Colors.green : Colors.blueGrey,
+                    color: widget.isSelected ? Colors.green : Colors.blueGrey,
                     borderRadius: const BorderRadius.only(
                       bottomRight: Radius.circular(8),
                       bottomLeft: Radius.circular(8),

@@ -3,7 +3,6 @@ import 'package:fitb_pantry_app/src/feature/order/data/model/product_model.dart'
 
 class GetProductsRepositoryImpl {
   final FirebaseFirestore store = FirebaseFirestore.instance;
-  @override
   Future<List<ProductModel>> getProducts() async {
     final collection = await store.collection('Items').get();
     final products = collection.docs.map((doc) {

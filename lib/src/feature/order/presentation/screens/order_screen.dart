@@ -114,15 +114,21 @@ class _OrderPageState extends State<OrderPage> {
                         return Padding(
                           padding: const EdgeInsets.all(8),
                           child: ItemCardWidget(
+                            isSelected: cart.contains(selectedProducts[index]),
+                            key: UniqueKey(),
                             onSelected: () {
                               cart.add(
                                 selectedProducts[index],
                               );
+                              print(selectedProducts[index].id);
+                              print(cart);
                             },
                             onUnselected: () {
                               cart.remove(
                                 selectedProducts[index],
                               );
+                              print(selectedProducts[index].id);
+                              print(cart);
                             },
                             order: selectedProducts,
                             item: selectedProducts[index],
