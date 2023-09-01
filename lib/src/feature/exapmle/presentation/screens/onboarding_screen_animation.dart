@@ -1,4 +1,5 @@
 import 'package:concentric_transition/page_view.dart';
+import 'package:fitb_pantry_app/src/feature/student/presentation/student_page.dart';
 import 'package:fitb_pantry_app/student.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -97,7 +98,7 @@ class _OnboardingScreenAnimationState extends State<OnboardingScreenAnimation> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const Student(),
+                  builder: (context) => const StudentPage(),
                 ),
               );
             },
