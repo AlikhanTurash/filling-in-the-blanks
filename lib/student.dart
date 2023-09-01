@@ -3,10 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:flutter/services.dart';
-import 'globals.dart'; // Import the globals file
+// Import the globals file
 
 void main() {
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Student()));
+  runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: Student()));
 }
 
 class Student extends StatefulWidget {
@@ -15,10 +15,11 @@ class Student extends StatefulWidget {
   @override
   State<Student> createState() => _StudentState();
 }
+
 String globalDocumentId = '';
 int weekdaysValue = DateTime.now().weekday;
 //CollectionReference collection =
-  //  FirebaseFirestore.instance.collection('School');
+//  FirebaseFirestore.instance.collection('School');
 Timestamp timestamp = Timestamp.fromDate(DateTime(weekdaysValue));
 final DateTime now = DateTime.now();
 final builder1 = ValidationBuilder().phone();
@@ -53,7 +54,7 @@ class _StudentState extends State<Student> {
                 key: _numberForm,
                 child: Column(
                   children: [
-                    SizedBox(height: 40),
+                    const SizedBox(height: 40),
                     TextFormField(
                       controller: _controllerPhone,
                       decoration: InputDecoration(
@@ -63,11 +64,11 @@ class _StudentState extends State<Student> {
                         ),
                         hintText: 'Phone Number',
                         constraints:
-                            BoxConstraints(maxWidth: 300, minWidth: 300),
+                            const BoxConstraints(maxWidth: 300, minWidth: 300),
                       ),
                       validator: builder1.maxLength(15).build(),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextFormField(
                       controller: _controllerEmail,
                       decoration: InputDecoration(
@@ -77,11 +78,11 @@ class _StudentState extends State<Student> {
                         ),
                         hintText: "Email",
                         constraints:
-                            BoxConstraints(maxWidth: 300, minWidth: 300),
+                            const BoxConstraints(maxWidth: 300, minWidth: 300),
                       ),
                       validator: builder2.maxLength(50).build(),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextFormField(
                       controller: _controllerFirst,
                       decoration: InputDecoration(
@@ -91,7 +92,7 @@ class _StudentState extends State<Student> {
                         ),
                         hintText: "First Name",
                         constraints:
-                            BoxConstraints(maxWidth: 300, minWidth: 300),
+                            const BoxConstraints(maxWidth: 300, minWidth: 300),
                       ),
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]'))
@@ -104,7 +105,7 @@ class _StudentState extends State<Student> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextFormField(
                       controller: _controllerLast,
                       decoration: InputDecoration(
@@ -114,7 +115,7 @@ class _StudentState extends State<Student> {
                         ),
                         hintText: "Last Name",
                         constraints:
-                            BoxConstraints(maxWidth: 300, minWidth: 300),
+                            const BoxConstraints(maxWidth: 300, minWidth: 300),
                       ),
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]'))
@@ -127,7 +128,7 @@ class _StudentState extends State<Student> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 25),
+                    const SizedBox(height: 25),
                     StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection("School")
@@ -168,7 +169,7 @@ class _StudentState extends State<Student> {
                                   hint: Text(
                                     "Select your school",
                                     style: TextStyle(
-                                       color: Colors.grey[600],
+                                      color: Colors.grey[600],
                                       fontSize: 20,
                                     ),
                                   ),
@@ -176,7 +177,7 @@ class _StudentState extends State<Student> {
                                   elevation: 16,
                                 ),
                               ),
-                              SizedBox(height: 75),
+                              const SizedBox(height: 75),
                               ElevatedButton(
                                 onPressed: () async {
                                   bool isFormEnabled =
@@ -197,21 +198,23 @@ class _StudentState extends State<Student> {
                                         'isValidStudent': 0,
                                       };
                                       CollectionReference collectionRef =
-                                      FirebaseFirestore.instance.collection('Student');
+                                          FirebaseFirestore.instance
+                                              .collection('Student');
 
                                       // Add the data and get the DocumentReference
-                                      DocumentReference docRef = await collectionRef.add(dataToSave);
+                                      DocumentReference docRef =
+                                          await collectionRef.add(dataToSave);
 
                                       setState(() {
                                         globalDocumentId = docRef.id;
                                       });
                                       // Get the ID of the newly added document
 
-
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => OrderPage(), // Pass the document ID
+                                          builder: (context) =>
+                                              OrderPage(), // Pass the document ID
                                         ),
                                       );
                                     } else {
@@ -237,8 +240,10 @@ class _StudentState extends State<Student> {
                                   backgroundColor: Colors.white,
                                   shadowColor: Colors.transparent,
                                   elevation: 0.0,
-                                ).copyWith(elevation:ButtonStyleButton.allOrNull(0.0)),
-                                child:Container(
+                                ).copyWith(
+                                    elevation:
+                                        ButtonStyleButton.allOrNull(0.0)),
+                                child: Container(
                                   height: 80,
                                   width: 300,
                                   alignment: Alignment.center,

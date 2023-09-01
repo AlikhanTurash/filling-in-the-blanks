@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:fitb_pantry_app/src/core/widgets/buttons/app_button.dart';
 import 'package:fitb_pantry_app/src/core/services/di.dart';
+import 'package:fitb_pantry_app/src/ui_component/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 import 'firebase_options.dart';
@@ -11,55 +13,55 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: const MyApp(),
+      theme: ThemeData(
+        scaffoldBackgroundColor: AppColors.backgroundColor,
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const SizedBox(width: double.infinity, height: 100),
-            const Image(
-              image: AssetImage('assets/images/fitb.png'),
+      backgroundColor: Colors.white,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 120),
+          const Image(
+            image: AssetImage('assets/images/fitb.png'),
+          ),
+          const SizedBox(height: 30),
+          const Text(
+            "Food Pantry App",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 32,
+              fontWeight: FontWeight.w800,
             ),
-            const SizedBox(height: 460),
-            ElevatedButton(
-              onPressed: () {
+          ),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: AppButton(
+              onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const Student()));
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                shadowColor: Colors.transparent,
-                elevation: 0.0,
-              ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-              child: Container(
-                height: 80,
-                width: 400,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text(
-                  'Get Started',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                  ),
-                ),
-              ),
+              buttonText: "Get Started",
             ),
-          ],
-        ),
+          ),
+          const SizedBox(
+            height: 46,
+          ),
+        ],
       ),
     );
   }
