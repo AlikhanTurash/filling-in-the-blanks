@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitb_pantry_app/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'student.dart'; // Import the globals file
-import 'orderSummary.dart';
 
 void main() {
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: OrderPage()));
+  runApp(
+      const MaterialApp(debugShowCheckedModeBanner: false, home: OrderPage()));
 }
 
 String globaldocumentid = globalDocumentId;
@@ -21,7 +21,7 @@ class Item {
 }
 
 class OrderPage extends StatefulWidget {
-  OrderPage({Key? key}) : super(key: key);
+  const OrderPage({Key? key}) : super(key: key);
 
   @override
   State<OrderPage> createState() => _OrderPageState();
@@ -49,52 +49,50 @@ class _OrderPageState extends State<OrderPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(width: double.infinity, height: 50),
-            Image(
+            const SizedBox(width: double.infinity, height: 50),
+            const Image(
               image: AssetImage('assets/images/fitb.png'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             FutureBuilder<Map<dynamic, List<Item>>>(
               future: createLists(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final lists = snapshot.data!;
-                  return
-                    Container(
-                      child: Column(
-                          children: List.generate(lists.length,(index){
-                            final groupingName = lists.keys.toList()[index];
-                            final items = lists[groupingName]!;
+                  return Container(
+                    child: Column(
+                        children: List.generate(lists.length, (index) {
+                      final groupingName = lists.keys.toList()[index];
+                      final items = lists[groupingName]!;
 
-                            return Column(
-                              children: [
-                                SizedBox(width: double.infinity, height: 50),
-                                Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(
-                                    groupingName,
-                                    style: TextStyle(
-                                        fontSize: 40, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Container(child: displayGroups(items)),
-                              ],
-                            );
-                          })
-                      ),
-                    );
+                      return Column(
+                        children: [
+                          const SizedBox(width: double.infinity, height: 50),
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Text(
+                              groupingName,
+                              style: const TextStyle(
+                                  fontSize: 40, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Container(child: displayGroups(items)),
+                        ],
+                      );
+                    })),
+                  );
                 } else if (snapshot.hasError) {
                   return Center(
                     child: Text('Error: ${snapshot.error}'),
                   );
                 } else {
-                  return Center(
+                  return const Center(
                     child: Text('No data available.'),
                   );
                 }
               },
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () async {
                 if (order.isNotEmpty) {
@@ -122,11 +120,11 @@ class _OrderPageState extends State<OrderPage> {
                       order.clear();
 
                       // Navigate to the OrderPage
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => OrderSummaryPage()),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //       builder: (context) => const OrderSummaryPage()),
+                      // );
                     } else {
                       print('Error find student information in Firestore');
                     }
@@ -147,29 +145,29 @@ class _OrderPageState extends State<OrderPage> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
               },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  shadowColor: Colors.transparent,
-                  elevation: 0.0,
-                ).copyWith(elevation:ButtonStyleButton.allOrNull(0.0)),
-                child:Container(
-                  height: 80,
-                  width: 400,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    'Order',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                    ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                shadowColor: Colors.transparent,
+                elevation: 0.0,
+              ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+              child: Container(
+                height: 80,
+                width: 400,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  'Order',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
                   ),
                 ),
+              ),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
           ],
         ),
       ),
@@ -199,7 +197,9 @@ class _OrderPageState extends State<OrderPage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: (!order.isEmpty && (order.indexWhere((element) => element.id == item.id) >= 0))
+              color: (order.isNotEmpty &&
+                      (order.indexWhere((element) => element.id == item.id) >=
+                          0))
                   ? Colors.green
                   : Colors.blueGrey,
               width: 3,
@@ -216,37 +216,40 @@ class _OrderPageState extends State<OrderPage> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
-                  constraints: BoxConstraints.expand(
+                  constraints: const BoxConstraints.expand(
                     height: 85,
                   ),
                   decoration: BoxDecoration(
-                    color:  (!order.isEmpty && (order.indexWhere((element) => element.id == item.id) >= 0))
+                    color: (order.isNotEmpty &&
+                            (order.indexWhere(
+                                    (element) => element.id == item.id) >=
+                                0))
                         ? Colors.green
                         : Colors.blueGrey,
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       bottomRight: Radius.circular(8),
                       bottomLeft: Radius.circular(8),
                     ),
                   ),
-                  padding: EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(4),
                   child: Column(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Center(
                         child: Text(
                           item.id,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 22,
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 6,
                       ),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
@@ -277,11 +280,11 @@ class _OrderPageState extends State<OrderPage> {
         crossAxisSpacing: 5,
       ),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
       itemBuilder: (context, index) {
         return Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: itemCard(items[index]),
         );
       },
@@ -293,7 +296,7 @@ class _OrderPageState extends State<OrderPage> {
         await FirebaseFirestore.instance.collection('Items').get();
     final Map<dynamic, List<Item>> lists = {};
 
-    querySnapshot.docs.forEach((doc) {
+    for (var doc in querySnapshot.docs) {
       final itemImage = doc['image'];
       final itemId = doc['id'];
       final itemGrouping = doc['group'];
@@ -307,7 +310,7 @@ class _OrderPageState extends State<OrderPage> {
         lists[itemGrouping]
             ?.add(Item(itemId, itemImage, itemGrouping, itemIsClicked));
       }
-    });
+    }
 
     return lists;
   }
@@ -344,7 +347,8 @@ class _OrderPageState extends State<OrderPage> {
 class PopupContent extends StatefulWidget {
   final String itemNameOrder; // Add this line
 
-  PopupContent({required this.itemNameOrder}); // Add this constructor
+  const PopupContent(
+      {super.key, required this.itemNameOrder}); // Add this constructor
 
   @override
   _PopupContentState createState() => _PopupContentState();
@@ -357,6 +361,7 @@ class _PopupContentState extends State<PopupContent> {
 
   int _quantity = 1;
 
+  @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -369,7 +374,7 @@ class _PopupContentState extends State<PopupContent> {
         children: <Widget>[
           Padding(
             padding: EdgeInsets.all(Spacing.matGridUnit()),
-            child: Text(
+            child: const Text(
               "Add item to Cart",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -385,7 +390,7 @@ class _PopupContentState extends State<PopupContent> {
               children: <Widget>[
                 IconButton(
                     iconSize: 40.0,
-                    icon: Icon(Icons.remove_circle),
+                    icon: const Icon(Icons.remove_circle),
                     color: isIconActive2 ? Colors.green : Colors.grey,
                     onPressed: () {
                       if (_quantity >= 1) {
@@ -405,14 +410,14 @@ class _PopupContentState extends State<PopupContent> {
                     }),
                 Text(
                   _quantity.toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 30,
                   ),
                 ),
                 IconButton(
                   iconSize: 40.0,
-                  icon: Icon(Icons.add_circle),
+                  icon: const Icon(Icons.add_circle),
                   color: isIconActive ? Colors.green : Colors.grey,
                   onPressed: () {
                     if (_quantity <= 1) {
