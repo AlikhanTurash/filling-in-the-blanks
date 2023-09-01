@@ -1,11 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitb_pantry_app/src/core/widgets/buttons/app_button.dart';
 import 'package:fitb_pantry_app/src/core/services/di.dart';
+import 'package:fitb_pantry_app/src/feature/exapmle/presentation/screens/onboarding_screen_animation.dart';
 import 'package:fitb_pantry_app/src/ui_component/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 import 'firebase_options.dart';
-import 'student.dart';
 
 Future<void> main() async {
   await initLocator();
@@ -13,6 +13,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -48,12 +49,20 @@ class MyApp extends StatelessWidget {
             ),
           ),
           const Spacer(),
+          Image.asset(
+            "assets/images/third_onboarding.png",
+            width: 250,
+          ),
+          const Spacer(flex: 4),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: AppButton(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Student()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const OnboardingScreenAnimation()),
+                );
               },
               buttonText: "Get Started",
             ),
