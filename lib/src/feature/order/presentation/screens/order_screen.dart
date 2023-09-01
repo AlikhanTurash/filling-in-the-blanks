@@ -39,6 +39,7 @@ class _OrderPageState extends State<OrderPage> {
   List<ProductModel> order = [];
 
   String selectedGroup = 'snacks';
+  List<String> groups = [];
 
   @override
   void initState() {
@@ -56,7 +57,6 @@ class _OrderPageState extends State<OrderPage> {
       body: SingleChildScrollView(
         child: BlocBuilder<OrderBloc, OrderState>(
           builder: (context, state) {
-            print(state);
             return state.when(
               error: (errorText) => Center(
                 child: Text(errorText),
@@ -66,6 +66,9 @@ class _OrderPageState extends State<OrderPage> {
                 child: CircularProgressIndicator.adaptive(),
               ),
               success: (List<ProductModel> lists) {
+                for (int i = 0; i < lists.length; i++) {
+                  groups.add(lists[i].group!);
+                }
                 List<ProductModel> filter(
                     {required List<ProductModel> listOfProducts,
                     required String group}) {
@@ -86,6 +89,27 @@ class _OrderPageState extends State<OrderPage> {
                       image: AssetImage('assets/images/fitb.png'),
                     ),
                     const SizedBox(height: 10),
+                    SizedBox(
+                      height: 70,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemCount: groupNames.length,
+                        itemBuilder: (context, index) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                          ),
+                          child: ChoiceChip(
+                            label: Text(
+                              groupNames[index],
+                            ),
+                            onSelected: (isSelected) {},
+                            selected: false,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -98,21 +122,6 @@ class _OrderPageState extends State<OrderPage> {
                         );
                       },
                     ),
-
-                    // FutureBuilder(
-                    //   future: createLists(),
-                    //   builder: (context, snapshot) {
-                    //     if (snapshot.hasData) {
-                    //       final lists = snapshot.data!;
-
-                    //     } else if (snapshot.hasError) {
-                    //     } else {
-                    //       return const Center(
-                    //         child: Text('No data available.'),
-                    //       );
-                    //     }
-                    //   },
-                    // ),
                     const SizedBox(height: 40),
                     ElevatedButton(
                       onPressed: () async {
