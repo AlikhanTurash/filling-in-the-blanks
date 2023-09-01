@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitb_pantry_app/src/core/services/di.dart';
 import 'package:fitb_pantry_app/src/core/widgets/buttons/app_button.dart';
-import 'package:fitb_pantry_app/src/feature/exapmle/presentation/screens/onboarding_screen_animation.dart';
+import 'package:fitb_pantry_app/src/feature/onboarding/onboarding_screen_animation.dart';
 import 'package:fitb_pantry_app/src/ui_component/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
