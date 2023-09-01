@@ -1,10 +1,12 @@
 import 'package:fitb_pantry_app/src/feature/app/app.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MaterialApp(
-      debugShowCheckedModeBanner: false, home: CompletePage()));
-}
+// void main() {
+
+//   runApp(MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: CompletePage()));
+// }
 
 class CompletePage extends StatelessWidget {
   const CompletePage({super.key});
