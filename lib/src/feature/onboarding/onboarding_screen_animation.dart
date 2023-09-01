@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:concentric_transition/page_view.dart';
+import 'package:fitb_pantry_app/src/feature/app/route/app_router.dart';
 import 'package:fitb_pantry_app/src/feature/student/presentation/student_page.dart';
 import 'package:fitb_pantry_app/student.dart';
 import 'package:flutter/cupertino.dart';
@@ -97,12 +98,7 @@ class _OnboardingScreenAnimationState extends State<OnboardingScreenAnimation> {
               );
             },
             onFinish: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const StudentPage(),
-                ),
-              );
+             context.router.replaceNamed(StudentRoute.name);
             },
           ),
         ),

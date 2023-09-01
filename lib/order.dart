@@ -4,10 +4,10 @@ import 'package:fitb_pantry_app/styles.dart';
 import 'package:flutter/material.dart';
 import 'student.dart'; // Import the globals file
 
-void main() {
-  runApp(
-      const MaterialApp(debugShowCheckedModeBanner: false, home: OrderPage()));
-}
+// void main() {
+//   runApp(
+//       const MaterialApp(debugShowCheckedModeBanner: false, home: OrderPage()));
+// }
 
 String globaldocumentid = globalDocumentId;
 

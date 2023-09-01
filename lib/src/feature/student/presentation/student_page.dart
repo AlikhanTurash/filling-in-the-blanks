@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:fitb_pantry_app/order.dart';
 
@@ -10,7 +11,7 @@ import 'package:fitb_pantry_app/src/feature/student/presentation/widgets/text_in
 import 'package:fitb_pantry_app/src/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+@RoutePage()
 class StudentPage extends StatefulWidget {
   const StudentPage({Key? key}) : super(key: key);
 
@@ -196,7 +197,7 @@ class _StudentPageState extends State<StudentPage> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              OrderPage(), // Pass the document ID
+                                              OrderPage(), 
                                         ),
                                       );
                                     } else {
