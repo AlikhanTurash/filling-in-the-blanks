@@ -1,3 +1,4 @@
+import 'package:fitb_pantry_app/src/feature/exapmle/presentation/bloc/example_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,8 +13,10 @@ class ProviderScope extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: const [
-        // BlocProvider(create: () => ExampleBloc())
+      providers: [
+        BlocProvider(
+          create: (context) => ExampleBloc(),
+        ),
       ],
       child: child,
     );
