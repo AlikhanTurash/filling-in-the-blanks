@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:fitb_pantry_app/src/core/widgets/buttons/app_button.dart';
+import 'package:fitb_pantry_app/src/feature/student/presentation/student_page.dart';
 import 'package:fitb_pantry_app/student.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +36,7 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Student(),
+                    builder: (context) => const StudentPage(),
                   ),
                 );
               },
