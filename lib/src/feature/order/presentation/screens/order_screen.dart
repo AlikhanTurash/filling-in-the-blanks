@@ -1,15 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fitb_pantry_app/src/feature/order/data/models/product_repository.dart';
+import 'package:fitb_pantry_app/src/feature/order/data/repositories/get_products_repositroy.dart';
+import 'package:fitb_pantry_app/src/feature/order/presentation/bloc/order_bloc.dart';
 import 'package:fitb_pantry_app/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'student.dart'; // Import the globals file
-import 'orderSummary.dart';
-
-void main() {
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: OrderPage()));
-}
-
-String globaldocumentid = globalDocumentId;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:l/l.dart';
+import '../../../../../student.dart'; // Import the globals file
+import '../../../../../orderSummary.dart';
 
 class Item {
   final String id;
@@ -17,11 +15,16 @@ class Item {
   final String grouping;
   int cardIsChecked;
 
-  Item(this.id, this.image, this.grouping, this.cardIsChecked);
+  Item(
+    this.id,
+    this.image,
+    this.grouping,
+    this.cardIsChecked,
+  );
 }
 
 class OrderPage extends StatefulWidget {
-  OrderPage({Key? key}) : super(key: key);
+  const OrderPage({Key? key}) : super(key: key);
 
   @override
   State<OrderPage> createState() => _OrderPageState();
@@ -33,12 +36,17 @@ class _OrderPageState extends State<OrderPage> {
   List<int> eachLimits = [];
   List<String> groupDirections = [];
   int listlength = 0;
-  List<Item> order = [];
+  List<ProductModel> order = [];
+
+  String selectedGroup = 'snacks';
 
   @override
   void initState() {
     super.initState();
-    createLists();
+    BlocProvider.of<OrderBloc>(context).add(
+      const OrderEvent.getProductsEvent(),
+    );
+    // createLists();
     getDirections();
   }
 
@@ -46,137 +54,152 @@ class _OrderPageState extends State<OrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(width: double.infinity, height: 50),
-            Image(
-              image: AssetImage('assets/images/fitb.png'),
-            ),
-            SizedBox(height: 10),
-            FutureBuilder<Map<dynamic, List<Item>>>(
-              future: createLists(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final lists = snapshot.data!;
-                  return
-                    Container(
-                      child: Column(
-                          children: List.generate(lists.length,(index){
-                            final groupingName = lists.keys.toList()[index];
-                            final items = lists[groupingName]!;
-
-                            return Column(
-                              children: [
-                                SizedBox(width: double.infinity, height: 50),
-                                Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(
-                                    groupingName,
-                                    style: TextStyle(
-                                        fontSize: 40, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Container(child: displayGroups(items)),
-                              ],
-                            );
-                          })
-                      ),
-                    );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                } else {
-                  return Center(
-                    child: Text('No data available.'),
-                  );
-                }
-              },
-            ),
-            SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () async {
-                if (order.isNotEmpty) {
-                  try {
-                    // Create a reference to the cart items collection
-                    CollectionReference studentOrders =
-                        FirebaseFirestore.instance.collection('Orders');
-
-                    // Prepare the data to save
-                    Map<String, dynamic> dataToSave = {
-                      'items': order
-                          .map((item) => {'itemId': item.id, 'quantity': 1})
-                          .toList(),
-                      'timestamp': FieldValue.serverTimestamp(),
-                      'studentId': globalDocumentId,
-                      'isValidOrder': 0,
-                    };
-
-                    if (globalDocumentId.isNotEmpty) {
-                      // Save the data to the cart items collection
-                      await studentOrders.add(dataToSave);
-                      print('Items added to cart in Firestore.');
-
-                      // Clear the selectedItems list after saving
-                      order.clear();
-
-                      // Navigate to the OrderPage
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => OrderSummaryPage()),
-                      );
-                    } else {
-                      print('Error find student information in Firestore');
+        child: BlocBuilder<OrderBloc, OrderState>(
+          builder: (context, state) {
+            print(state);
+            return state.when(
+              error: (errorText) => Center(
+                child: Text(errorText),
+              ),
+              initial: () => const SizedBox.shrink(),
+              loading: () => const Center(
+                child: CircularProgressIndicator.adaptive(),
+              ),
+              success: (List<ProductModel> lists) {
+                List<ProductModel> filter(
+                    {required List<ProductModel> listOfProducts,
+                    required String group}) {
+                  List<ProductModel> result = [];
+                  for (int i = 0; i < listOfProducts.length; i++) {
+                    if (listOfProducts[i].group == group) {
+                      result.add(listOfProducts[i]);
                     }
-                  } catch (e) {
-                    print('Error adding items to cart in Firestore: $e');
                   }
-                } else {
-                  // Show a message if no items are selected
-                  const snackBar = SnackBar(
-                    content: Text(
-                      'No items selected',
-                      style: TextStyle(
-                        color: Colors.white,
+                  return result;
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: double.infinity, height: 50),
+                    const Image(
+                      image: AssetImage('assets/images/fitb.png'),
+                    ),
+                    const SizedBox(height: 10),
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return displayGroups(
+                          filter(
+                            listOfProducts: lists,
+                            group: selectedGroup,
+                          ),
+                        );
+                      },
+                    ),
+
+                    // FutureBuilder(
+                    //   future: createLists(),
+                    //   builder: (context, snapshot) {
+                    //     if (snapshot.hasData) {
+                    //       final lists = snapshot.data!;
+
+                    //     } else if (snapshot.hasError) {
+                    //     } else {
+                    //       return const Center(
+                    //         child: Text('No data available.'),
+                    //       );
+                    //     }
+                    //   },
+                    // ),
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // if (order.isNotEmpty) {
+                        //   try {
+                        //     // Create a reference to the cart items collection
+                        //     CollectionReference studentOrders =
+                        //         FirebaseFirestore.instance.collection('Orders');
+
+                        //     // Prepare the data to save
+                        //     Map<String, dynamic> dataToSave = {
+                        //       'items': order
+                        //           .map((item) => {'itemId': item.id, 'quantity': 1})
+                        //           .toList(),
+                        //       'timestamp': FieldValue.serverTimestamp(),
+                        //       'studentId': globalDocumentId,
+                        //       'isValidOrder': 0,
+                        //     };x
+
+                        //     if (globalDocumentId.isNotEmpty) {
+                        //       // Save the data to the cart items collection
+                        //       await studentOrders.add(dataToSave);
+                        //       print('Items added to cart in Firestore.');
+
+                        //       // Clear the selectedItems list after saving
+                        //       order.clear();
+
+                        //       // Navigate to the OrderPage
+                        //       Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //             builder: (context) => const OrderSummaryPage()),
+                        //       );
+                        //     } else {
+                        //       print('Error find student information in Firestore');
+                        //     }
+                        //   } catch (e) {
+                        //     print('Error adding items to cart in Firestore: $e');
+                        //   }
+                        // } else {
+                        //   // Show a message if no items are selected
+                        //   const snackBar = SnackBar(
+                        //     content: Text(
+                        //       'No items selected',
+                        //       style: TextStyle(
+                        //         color: Colors.white,
+                        //       ),
+                        //     ),
+                        //     backgroundColor: Colors.red,
+                        //   );
+                        //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        // }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shadowColor: Colors.transparent,
+                        elevation: 0.0,
+                      ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                      child: Container(
+                        height: 80,
+                        width: 400,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          'Order',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                          ),
+                        ),
                       ),
                     ),
-                    backgroundColor: Colors.red,
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                }
+                    const SizedBox(height: 40),
+                  ],
+                );
               },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  shadowColor: Colors.transparent,
-                  elevation: 0.0,
-                ).copyWith(elevation:ButtonStyleButton.allOrNull(0.0)),
-                child:Container(
-                  height: 80,
-                  width: 400,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    'Order',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                    ),
-                  ),
-                ),
-            ),
-            SizedBox(height: 40),
-          ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget itemCard(Item item) {
+  Widget itemCard(ProductModel item) {
     return Card(
       elevation: 8.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -189,8 +212,7 @@ class _OrderPageState extends State<OrderPage> {
             } else {
               order.add(item);
             }
-            print(
-                'Item card checked: ${item.id}, cardIsChecked: ${item.cardIsChecked}');
+            print('Item card checked: ${item.id}, cardIsChecked: ${item}');
           });
         },
         child: Container(
@@ -199,7 +221,9 @@ class _OrderPageState extends State<OrderPage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: (!order.isEmpty && (order.indexWhere((element) => element.id == item.id) >= 0))
+              color: (!order.isEmpty &&
+                      (order.indexWhere((element) => element.id == item.id) >=
+                          0))
                   ? Colors.green
                   : Colors.blueGrey,
               width: 3,
@@ -208,7 +232,7 @@ class _OrderPageState extends State<OrderPage> {
           child: Stack(
             children: [
               Image.network(
-                item.image,
+                item.image ?? '',
                 alignment: Alignment.bottomCenter,
                 fit: BoxFit
                     .cover, // Adjusts the image to fit within the container
@@ -216,37 +240,40 @@ class _OrderPageState extends State<OrderPage> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
-                  constraints: BoxConstraints.expand(
+                  constraints: const BoxConstraints.expand(
                     height: 85,
                   ),
                   decoration: BoxDecoration(
-                    color:  (!order.isEmpty && (order.indexWhere((element) => element.id == item.id) >= 0))
+                    color: (!order.isEmpty &&
+                            (order.indexWhere(
+                                    (element) => element.id == item.id) >=
+                                0))
                         ? Colors.green
                         : Colors.blueGrey,
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       bottomRight: Radius.circular(8),
                       bottomLeft: Radius.circular(8),
                     ),
                   ),
-                  padding: EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(4),
                   child: Column(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Center(
                         child: Text(
-                          item.id,
-                          style: TextStyle(
+                          item.id ?? '',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 22,
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 6,
                       ),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
@@ -268,7 +295,7 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  Widget displayGroups(List<Item> items) {
+  Widget displayGroups(List<ProductModel> items) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -277,39 +304,15 @@ class _OrderPageState extends State<OrderPage> {
         crossAxisSpacing: 5,
       ),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
       itemBuilder: (context, index) {
         return Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: itemCard(items[index]),
         );
       },
     );
-  }
-
-  Future<Map<dynamic, List<Item>>> createLists() async {
-    final QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('Items').get();
-    final Map<dynamic, List<Item>> lists = {};
-
-    querySnapshot.docs.forEach((doc) {
-      final itemImage = doc['image'];
-      final itemId = doc['id'];
-      final itemGrouping = doc['group'];
-
-      if (querySnapshot.docs.isNotEmpty) {
-        if (!lists.containsKey(itemGrouping)) {
-          lists[itemGrouping] = [];
-          // Initialize with false
-        }
-        var itemIsClicked = 0;
-        lists[itemGrouping]
-            ?.add(Item(itemId, itemImage, itemGrouping, itemIsClicked));
-      }
-    });
-
-    return lists;
   }
 
   Future<void> getDirections() async {
@@ -369,7 +372,7 @@ class _PopupContentState extends State<PopupContent> {
         children: <Widget>[
           Padding(
             padding: EdgeInsets.all(Spacing.matGridUnit()),
-            child: Text(
+            child: const Text(
               "Add item to Cart",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -385,7 +388,7 @@ class _PopupContentState extends State<PopupContent> {
               children: <Widget>[
                 IconButton(
                     iconSize: 40.0,
-                    icon: Icon(Icons.remove_circle),
+                    icon: const Icon(Icons.remove_circle),
                     color: isIconActive2 ? Colors.green : Colors.grey,
                     onPressed: () {
                       if (_quantity >= 1) {
@@ -405,14 +408,14 @@ class _PopupContentState extends State<PopupContent> {
                     }),
                 Text(
                   _quantity.toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 30,
                   ),
                 ),
                 IconButton(
                   iconSize: 40.0,
-                  icon: Icon(Icons.add_circle),
+                  icon: const Icon(Icons.add_circle),
                   color: isIconActive ? Colors.green : Colors.grey,
                   onPressed: () {
                     if (_quantity <= 1) {
@@ -507,4 +510,28 @@ class _PopupContentState extends State<PopupContent> {
       ),
     );
   }
+}
+
+Future<Map<dynamic, List<Item>>> createLists() async {
+  final QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('Items').get();
+  final Map<dynamic, List<Item>> lists = {};
+
+  for (var doc in querySnapshot.docs) {
+    final itemImage = doc['image'];
+    final itemId = doc['id'];
+    final itemGrouping = doc['group'];
+
+    if (querySnapshot.docs.isNotEmpty) {
+      if (!lists.containsKey(itemGrouping)) {
+        lists[itemGrouping] = [];
+        // Initialize with false
+      }
+      var itemIsClicked = 0;
+      lists[itemGrouping]
+          ?.add(Item(itemId, itemImage, itemGrouping, itemIsClicked));
+    }
+  }
+  print(lists);
+  return lists;
 }
