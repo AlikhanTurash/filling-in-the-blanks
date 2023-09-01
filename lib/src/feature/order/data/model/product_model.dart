@@ -1,21 +1,16 @@
-class ProductModel {
-  String? image;
-  String? id;
-  String? group;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  ProductModel({this.image, this.id, this.group});
+part 'product_model.freezed.dart';
+part 'product_model.g.dart';
 
-  ProductModel.fromJson(Map<String, dynamic> json) {
-    image = json['image'];
-    id = json['id'];
-    group = json['group'];
-  }
+@freezed
+class ProductModel with _$ProductModel {
+  const factory ProductModel({
+    String? image,
+    String? id,
+    String? group,
+  }) = _ProductModel;
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['image'] = image;
-    data['id'] = id;
-    data['group'] = group;
-    return data;
-  }
+  factory ProductModel.fromJson(Map<String, dynamic> json) => _$ProductModelFromJson(json);
 }
+

@@ -1,7 +1,9 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:fitb_pantry_app/completed.dart';
 import 'package:fitb_pantry_app/src/feature/order/data/model/product_model.dart';
 import 'package:flutter/material.dart';
 
+@RoutePage()
 class OrderSummaryPage extends StatefulWidget {
   const OrderSummaryPage({
     super.key,
@@ -39,6 +41,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 1,
                   childAspectRatio: 6, // Number of columns in the grid view

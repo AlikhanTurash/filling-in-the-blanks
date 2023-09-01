@@ -1,19 +1,22 @@
-import 'order.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:fitb_pantry_app/src/core/services/di.dart';
+import 'package:fitb_pantry_app/src/feature/order/presentation/screens/order_screen.dart';
+import 'package:fitb_pantry_app/src/feature/student/domain/usecases/is_valid_to_day_order.dart';
+import 'package:fitb_pantry_app/src/feature/student/presentation/utils/snack_bar.dart';
+import 'package:fitb_pantry_app/src/feature/student/presentation/widgets/custom_button.dart';
+import 'package:fitb_pantry_app/src/feature/student/presentation/widgets/text_input_widget.dart';
+import 'package:fitb_pantry_app/src/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:form_validator/form_validator.dart';
 import 'package:flutter/services.dart';
-// Import the globals file
 
-void main() {
-  runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: Student()));
-}
-
-class Student extends StatefulWidget {
-  const Student({Key? key}) : super(key: key);
+@RoutePage()
+class StudentPage extends StatefulWidget {
+  const StudentPage({Key? key}) : super(key: key);
 
   @override
-  State<Student> createState() => _StudentState();
+  State<StudentPage> createState() => _StudentPageState();
 }
 
 String globalDocumentId = '';
@@ -22,21 +25,19 @@ int weekdaysValue = DateTime.now().weekday;
 //  FirebaseFirestore.instance.collection('School');
 Timestamp timestamp = Timestamp.fromDate(DateTime(weekdaysValue));
 final DateTime now = DateTime.now();
-final builder1 = ValidationBuilder().phone();
 DateTime? closeDate;
-final builder2 = ValidationBuilder().email();
-final TextInputFormatter digitsOnly =
-    FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]'));
 var _numberForm = GlobalKey<FormState>();
 bool isValidForm = false;
-var selectedSchool1;
+var selectedSchoolOne;
 TextEditingController _controllerPhone = TextEditingController();
 TextEditingController _controllerEmail = TextEditingController();
 TextEditingController _controllerFirst = TextEditingController();
 TextEditingController _controllerLast = TextEditingController();
 TextEditingController _controllerSchool = TextEditingController();
 
-class _StudentState extends State<Student> {
+final isTodayValidOrderDayUseCase = sl<IsTodayValidOrderDayUC>();
+
+class _StudentPageState extends State<StudentPage> {
   bool isActive = false;
 
   @override
@@ -45,8 +46,8 @@ class _StudentState extends State<Student> {
       body: SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           const SizedBox(width: double.infinity, height: 100),
-          const Image(
-            image: AssetImage('assets/images/fitb.png'),
+          Image(
+            image: AssetImage(Assets.images.fitb.path),
           ),
           Column(
             children: [
@@ -55,78 +56,60 @@ class _StudentState extends State<Student> {
                 child: Column(
                   children: [
                     const SizedBox(height: 40),
-                    TextFormField(
-                      controller: _controllerPhone,
-                      decoration: InputDecoration(
-                        hintStyle: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 20,
-                        ),
-                        hintText: 'Phone Number',
-                        constraints:
-                            const BoxConstraints(maxWidth: 300, minWidth: 300),
-                      ),
-                      validator: builder1.maxLength(15).build(),
+                    TextInputWidget(
+                      textEditingController: _controllerPhone,
+                      hintText: 'Phone',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your phone number';
+                        }
+                        final phoneRegExp = RegExp(r'^\+?[1-9]\d{1,14}$');
+                        if (!phoneRegExp.hasMatch(value)) {
+                          return 'Enter a valid phone number';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 15),
-                    TextFormField(
-                      controller: _controllerEmail,
-                      decoration: InputDecoration(
-                        hintStyle: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 20,
-                        ),
-                        hintText: "Email",
-                        constraints:
-                            const BoxConstraints(maxWidth: 300, minWidth: 300),
-                      ),
-                      validator: builder2.maxLength(50).build(),
+                    TextInputWidget(
+                      textEditingController: _controllerEmail,
+                      hintText: "Email",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter an email';
+                        }
+                        if (!EmailValidator.validate(value)) {
+                          return 'Enter a valid email';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 15),
-                    TextFormField(
-                      controller: _controllerFirst,
-                      decoration: InputDecoration(
-                        hintStyle: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 20,
-                        ),
-                        hintText: "First Name",
-                        constraints:
-                            const BoxConstraints(maxWidth: 300, minWidth: 300),
-                      ),
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]'))
-                      ],
-                      validator: (String? value) {
+                    TextInputWidget(
+                        inputFormatter: FilteringTextInputFormatter.allow(
+                            RegExp('[a-zA-Z]')),
+                        textEditingController: _controllerFirst,
+                        hintText: 'First Name',
+                        validator: (value) {
+                          if (value != null && value.isEmpty) {
+                            return "Field can't be empty";
+                          }
+
+                          return null;
+                        }),
+                    const SizedBox(height: 15),
+                    TextInputWidget(
+                      textEditingController: _controllerLast,
+                      inputFormatter:
+                          FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]')),
+                      validator: (value) {
                         if (value != null && value.isEmpty) {
                           return "Field can't be empty";
                         }
 
                         return null;
                       },
-                    ),
-                    const SizedBox(height: 15),
-                    TextFormField(
-                      controller: _controllerLast,
-                      decoration: InputDecoration(
-                        hintStyle: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 20,
-                        ),
-                        hintText: "Last Name",
-                        constraints:
-                            const BoxConstraints(maxWidth: 300, minWidth: 300),
-                      ),
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]'))
-                      ],
-                      validator: (String? value) {
-                        if (value != null && value.isEmpty) {
-                          return "Field can't be empty";
-                        }
-
-                        return null;
-                      },
+                      hintText: 'Last Name',
                     ),
                     const SizedBox(height: 25),
                     StreamBuilder<QuerySnapshot>(
@@ -160,11 +143,11 @@ class _StudentState extends State<Student> {
                                   items: listOfSchools,
                                   onChanged: (schoolValue) {
                                     setState(() {
-                                      selectedSchool1 = schoolValue;
+                                      selectedSchoolOne = schoolValue;
                                       _controllerSchool.text = schoolValue;
                                     });
                                   },
-                                  value: selectedSchool1,
+                                  value: selectedSchoolOne,
                                   isExpanded: false,
                                   hint: Text(
                                     "Select your school",
@@ -178,11 +161,11 @@ class _StudentState extends State<Student> {
                                 ),
                               ),
                               const SizedBox(height: 75),
-                              ElevatedButton(
+                              CustomElevatedButton(
                                 onPressed: () async {
                                   bool isFormEnabled =
-                                      await isTodayValidOrderDay(
-                                          selectedSchool1);
+                                      await isTodayValidOrderDayUseCase(
+                                          selectedSchoolOne);
 
                                   if (isFormEnabled) {
                                     if (_numberForm.currentState!.validate()) {
@@ -214,7 +197,7 @@ class _StudentState extends State<Student> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const OrderPage(), // Pass the document ID
+                                              const OrderPage(),
                                         ),
                                       );
                                     } else {
@@ -223,43 +206,15 @@ class _StudentState extends State<Student> {
                                       });
                                     }
                                   } else {
-                                    const snackBar = SnackBar(
-                                      content: Text(
-                                        'Sorry, you cannot order from your school at this time',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      backgroundColor: Colors.red,
+                                    StudentUtils().showSnackBar(
+                                      context,
+                                      'Sorry, you cannot order from your school at this time',
+                                      Colors.red,
                                     );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
                                   }
                                 },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  shadowColor: Colors.transparent,
-                                  elevation: 0.0,
-                                ).copyWith(
-                                    elevation:
-                                        ButtonStyleButton.allOrNull(0.0)),
-                                child: Container(
-                                  height: 80,
-                                  width: 300,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Text(
-                                    'Start Order',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 30,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                                text: 'Get Started',
+                              )
                             ],
                           );
                         }
@@ -273,39 +228,5 @@ class _StudentState extends State<Student> {
         ]),
       ),
     );
-  }
-
-  Future<bool> isTodayValidOrderDay(String selectedSchool) async {
-    try {
-      // Retrieve the information for the school
-      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-          .collection('School')
-          .doc(selectedSchool)
-          .get();
-
-      // If the school is not active, return false
-
-      // Check if the day is in the range
-      if (documentSnapshot.exists) {
-        bool isSchoolActive = documentSnapshot['is active'];
-        int weekdayValue = DateTime.now().weekday;
-        int openDate = documentSnapshot['open date'].toInt();
-        int closeDate = documentSnapshot['close date'].toInt();
-        if (isSchoolActive == true) {
-          if (openDate <= closeDate) {
-            return openDate <= weekdayValue && weekdayValue <= closeDate;
-          } else {
-            return weekdayValue >= openDate || weekdayValue <= closeDate;
-          }
-        } else {
-          return false;
-        }
-      }
-
-      return false;
-    } catch (e) {
-      print('Error fetching weekdays from Firestore: $e');
-      return false;
-    }
   }
 }

@@ -1,10 +1,12 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:concentric_transition/page_view.dart';
-import 'package:fitb_pantry_app/student.dart';
+import 'package:fitb_pantry_app/src/feature/app/route/app_router.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../ui_component/theme/app_colors.dart';
+import '../../ui_component/theme/app_colors.dart';
 
+@RoutePage()
 class OnboardingScreenAnimation extends StatefulWidget {
   const OnboardingScreenAnimation({super.key});
 
@@ -25,10 +27,10 @@ class _OnboardingScreenAnimationState extends State<OnboardingScreenAnimation> {
   @override
   Widget build(BuildContext context) {
     final List<String> instructionTexts = [
-      "Welcome to the\nFilling in the blanks app!\n\nWith this app you can provide\nyour child a weekend meal.",
+      "Welcome to the Filling In The Blanks app!Filling in the Blanks fights childhood hunger by providing children in need with meals on the weekends.",
       "You should register in the\napp with your phone number\nor email to get started.",
-      "After the registration you can\nchoose what food fill be\nin your order.",
-      "Then just save the cart\nand enjoy!",
+      "After the registration, you can choose what food will be in your order. ",
+      "Just add the products to the cart and place your order. ",
       "Let's start!",
     ];
     return Stack(
@@ -94,12 +96,7 @@ class _OnboardingScreenAnimationState extends State<OnboardingScreenAnimation> {
               );
             },
             onFinish: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Student(),
-                ),
-              );
+              context.router.replace(const StudentRoute());
             },
           ),
         ),
