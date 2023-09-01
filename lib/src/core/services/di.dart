@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:fitb_pantry_app/src/core/network/layers/network_connectivity.dart';
 import 'package:fitb_pantry_app/src/core/network/layers/network_creator.dart';
 import 'package:fitb_pantry_app/src/core/network/layers/network_decoder.dart';
 import 'package:fitb_pantry_app/src/core/network/layers/network_executer.dart';
+import 'package:fitb_pantry_app/src/feature/order/data/repositories/get_products_repositroy.dart';
 import 'package:fitb_pantry_app/src/feature/student/data/remote/repository/student_remote_repository.dart';
 import 'package:get_it/get_it.dart';
 
@@ -21,6 +21,9 @@ Future<void> initLocator() async {
 //REPOSITORIES
   sl.registerLazySingleton<StudentRemoteRepository>(
       () => StudentRepositoryImpl());
+
+  sl.registerLazySingleton<GetProductsRepositoryImpl>(
+      () => GetProductsRepositoryImpl());
 
   //CORE
   sl.registerLazySingleton(() => Dio());

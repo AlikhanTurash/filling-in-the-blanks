@@ -1,9 +1,8 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:fitb_pantry_app/order.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:fitb_pantry_app/src/core/services/di.dart';
+import 'package:fitb_pantry_app/src/feature/order/presentation/screens/order_screen.dart';
 import 'package:fitb_pantry_app/src/feature/student/domain/usecases/is_valid_to_day_order.dart';
 import 'package:fitb_pantry_app/src/feature/student/presentation/utils/snack_bar.dart';
 import 'package:fitb_pantry_app/src/feature/student/presentation/widgets/custom_button.dart';
@@ -11,6 +10,7 @@ import 'package:fitb_pantry_app/src/feature/student/presentation/widgets/text_in
 import 'package:fitb_pantry_app/src/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 @RoutePage()
 class StudentPage extends StatefulWidget {
   const StudentPage({Key? key}) : super(key: key);
@@ -35,7 +35,7 @@ TextEditingController _controllerFirst = TextEditingController();
 TextEditingController _controllerLast = TextEditingController();
 TextEditingController _controllerSchool = TextEditingController();
 
-    final isTodayValidOrderDayUseCase = sl<IsTodayValidOrderDayUC>();
+final isTodayValidOrderDayUseCase = sl<IsTodayValidOrderDayUC>();
 
 class _StudentPageState extends State<StudentPage> {
   bool isActive = false;
@@ -161,8 +161,8 @@ class _StudentPageState extends State<StudentPage> {
                                 ),
                               ),
                               const SizedBox(height: 75),
-                              CustomElevatedButton(onPressed:
-                                   () async {
+                              CustomElevatedButton(
+                                onPressed: () async {
                                   bool isFormEnabled =
                                       await isTodayValidOrderDayUseCase(
                                           selectedSchoolOne);
@@ -197,7 +197,7 @@ class _StudentPageState extends State<StudentPage> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              OrderPage(), 
+                                              const OrderPage(),
                                         ),
                                       );
                                     } else {
@@ -209,10 +209,12 @@ class _StudentPageState extends State<StudentPage> {
                                     StudentUtils().showSnackBar(
                                       context,
                                       'Sorry, you cannot order from your school at this time',
-                                      Colors.red as Color,
+                                      Colors.red,
                                     );
                                   }
-                                }, text: 'Get Started',)
+                                },
+                                text: 'Get Started',
+                              )
                             ],
                           );
                         }
@@ -226,6 +228,5 @@ class _StudentPageState extends State<StudentPage> {
         ]),
       ),
     );
-    
   }
 }
